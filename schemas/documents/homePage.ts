@@ -28,5 +28,10 @@ export default defineType({
             title: 'About REVOLVE',
             type: 'blockContent',
         }),
+        defineField({
+            name: 'newsletterSignup',
+            title: 'Newsletter Signup',
+            type: 'newsletterSignup',
+        }),
     ],
 })
