@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import { DateTime } from 'luxon';
 
 export default defineType({
   name: 'eventPage',
@@ -31,22 +32,6 @@ export default defineType({
       },
     }),        
     defineField({
-      name: 'date',
-      title: 'Date',
-      type: 'date',
-      options: {
-        dateFormat: 'MM-DD-YYYY',
-      },
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'time',
-      title: 'Time',
-      type: 'string',
-      initialValue: '6 - 7:30pm',
-      description: 'Please use this format: "6pm", "6:30pm", "5 – 7pm", "11am - 2pm", etc.',
-    }),
-    defineField({
       name: 'program',
       title: 'Program',
       type: 'string',
@@ -59,11 +44,43 @@ export default defineType({
           { title: 'Film Screening', value: 'filmScreening' },
           { title: 'Queer Artist Meetup', value: 'queerArtistMeetup' },
           { title: 'Skillshare', value: 'skillshare' },
+          { title: 'Community Event', value: 'communityEvent' },
         ],
         layout: 'dropdown',
       },
       description: 'Which core programming is this event associated with?',
     }),    
+    defineField({
+      name: 'multiDayEvent',
+      title: 'Multi-Day Event?',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'startDate',
+      title: 'Start Date',
+      type: 'date',
+      options: {
+        dateFormat: 'dddd, MMMM DD, YYYY',
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'endDate',
+      title: 'End Date',
+      type: 'date',
+      options: {
+        dateFormat: 'dddd, MMMM DD, YYYY',
+      },
+      hidden: ({document}) => !document?.multiDayEvent,
+    }),
+    defineField({
+      name: 'time',
+      title: 'Time',
+      type: 'string',
+      initialValue: '6 - 7:30pm',
+      description: 'Please use this format: "6pm", "6:30pm", "5 – 7pm", "11am - 2pm", etc.',
+    }),
     defineField({
       name: 'featuredImage',
       title: 'Featured Image',
@@ -101,19 +118,25 @@ export default defineType({
     select: {
       title: 'title',
       subtitle: 'program',
-      date: 'date',
+      date: 'startDate',
       media: 'featuredImage',
     },
     prepare(selection) {
-      const {title, subtitle, date, media} = selection
-      const programTitle = subtitle.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
-      const dateObject = new Date(date)
-      const formattedDate = `${dateObject.getMonth() + 1}.${dateObject.getDate()}.${dateObject.getFullYear()}`
+      const { title, subtitle, date, media } = selection;
+      const programTitle = subtitle.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+      const dateObject = DateTime.fromISO(date, { zone: 'America/New_York' });
+    
+      const formattedDate = dateObject.toLocaleString({
+        month: 'numeric',
+        day: '2-digit',
+        year: 'numeric',
+      });
+    
       return {
         title: title,
         subtitle: `${programTitle} | ${formattedDate}`,
         media: media,
-      }
-    },
+      };
+    },       
   },
 })

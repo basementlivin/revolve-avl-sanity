@@ -36,8 +36,8 @@ export default defineType({
         // Decorators usually describe a single property – e.g. a typographic
         // preference or highlighting by editors.
         decorators: [
-          {title: 'Strong', value: 'strong'},
-          {title: 'Emphasis', value: 'em'},
+          {title: 'Bold', value: 'strong'},
+          {title: 'Italic', value: 'em'},
         ],
         // Annotations can be any object structure – e.g. a link or a footnote.
         annotations: [
@@ -50,6 +50,12 @@ export default defineType({
                 title: 'URL',
                 name: 'href',
                 type: 'url',
+              },
+              {
+                title: 'Open in new tab?',
+                name: 'newTab',
+                type: 'boolean',
+                initialValue: true,
               },
             ],
           },
